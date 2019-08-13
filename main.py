@@ -144,17 +144,22 @@ def chat():
         # leaves the loop if the word is quit 
         if talk.lower() == "quit":
             break
-
+        
+        # returns a list of predictions on how lucky it could be this tag
         results = model.predict([translate(talk, words)])
+
         # it will give us the index of the largest number
         results_index = numpy.argmax(results)
 
         # this will get the predicted tag for the input
         tag = labels[results_index]
-
-        for reply in data["intents"]:
-            if reply["tag"] == tag:
-                responses = reply["responses"]
+        
+        if results[results_index] < 0.7:
+            for reply in data["intents"]:
+                if reply["tag"] == tag:
+                    responses = reply["responses"]
+        else:
+            print("Please enter another question.")
 
         print(random.choice(responses))
 
