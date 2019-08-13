@@ -1,6 +1,6 @@
 import nltk
-nltk.download()
 from nltk.stem.lancaster import LancasterStemmer
+stemmer = LancasterStemmer()
 
 import numpy
 import tflearn
@@ -77,5 +77,31 @@ for x, doc in enumerate(docs_I):
     training.append(bag)
     output.append(output_row)
 
+# takes the list and changes them into an array 
+# which can be fed to our modle
 training = numpy.array(training)
-output = np.array(output)
+output = numpy.array(output)
+
+
+
+### creating the model ###
+
+#resetting the old data  
+tensorflow.reset_default_graph()
+
+net = tflearn.input_data(shape=[None,len(training[0])])
+
+# hidding layer with 8
+net = tflearn.fully_connected(net, 8)
+net = tflearn.fully_connected(net, 8)
+
+# output  layer 
+net = tflearn.fully_connected(net, len(output[0]), activation="softmax")
+net = tflearn.regression(net)
+
+# DNN is the type of  network
+model = tflearn.DNN(net)
+
+# fitting the data passing it and the 2000 is the number of times the model will see the data
+model.fit(training,output,n_epoch=2000, batch_size=8, show_metric=True)
+model.save("model.tflearn")
